@@ -1,2 +1,10 @@
 # consumer-e-car-charging-growth
 An analysis concerning consumer search interest in electric cars on charging port growth over 11 years.
+
+This study investigated the impact of online search surrounding sustainable intentions on the presence of electric car charging ports, specifically in the United States, from 2010 to 2021. On average, consumers’ intentions for more sustainable travel greatly surpassed their intentions for sustainable food consumption. However, compared to the average 34.6% of respondents across all 47 countries, a lower rate of 23.5% of respondents in the United States indicated an intention to travel more sustainably.
+
+To capture additional measures that would reflect sustainable travel intentions in the United States, three time series were collected from Google Trends: interest in global warming, in climate change, and in buying electric cars, all expressed as search terms.
+
+The collected variables were merged with the provided data set on electric charging stations and ports that were installed from March 2010 to December 2021. The number of electric charging station installations rose sharply after 2019. However, this study found the acute and steady rise of fast-charging ports during the latter half of the observation period to be more striking, especially in comparison to the total amount of port openings during the same period.
+
+Two dependent variables were used for model input: the number of total ports opened and the number of fast-charging ports opened. To account for the delayed effect of search interest on charging station and port installations, both explanatory variables representing interest in buying electric cars and in global warming were lag-transformed, starting at six months and ending at 12 months for each measure. Lastly, a new dummy variable was created to represent the months before and after July 2018, a moment that witnessed a significant jump in the number of newly-opened fast-charging ports. Electric cars and chargers were seen as products independent from any seasonal peaks or dips, so no seasonality-related transformations were applied to the variables.
