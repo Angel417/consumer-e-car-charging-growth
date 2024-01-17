@@ -1,0 +1,336 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+LOAD IN LIBRARIES & DATA SET
+```{r}
+
+install.packages("car")
+
+# Load in libraries
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(Hmisc)
+library(naniar)
+library(GGally)
+library(janitor)
+library(formattable)
+library(jtools) # Summarizing regression output, effect_plot
+library(broom) # Tidying and augmenting model output
+library(margins) # Marginal effects
+library(ggfortify)
+library(stargazer)
+library(modelsummary)
+library(car)
+
+# Load in data
+data <- read_csv("charging_final.csv")
+```
+
+CHARGING STATIONS AS DV
+```{r}
+# IVs - interest in global warming, interest in e-cars
+data %>%
+  lm(ChargingStations ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags)
+data %>%
+  lm(ChargingStations ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12,
+     data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags), sep 2017 break
+data %>%
+  lm(ChargingStations ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12 +
+       post_sep_17,
+     data = .) %>%
+  summ(digits = 3)
+```
+
+CHARGING STATIONS AS DV - MOST SIGNIFICANT LAGS
+```{r}
+# gw_lag_6, car_lag_6, car_lag_10, car_lag_11
+data %>%
+  lm(ChargingStations ~ gw_lag_6 + car_lag_6 + car_lag_10 + car_lag_11, data = .) %>%
+  summ(digits = 3)
+
+```
+
+CHARGING STATIONS AS DV (LAGGED)
+```{r}
+# IVs - interest in global warming, interest in e-cars
+data %>%
+  lm(stations_lag_12 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(stations_lag_1 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags)
+data %>%
+  lm(stations_lag_12 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags), sep 2017 break
+data %>%
+  lm(stations_lag_1 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12 +
+       post_sep_17,
+     data = .) %>%
+  summ(digits = 3)
+```
+
+CHARGING STATIONS AS DV (LAGGED) - MOST SIGNIFICANT
+```{r}
+# car_lag_7, car_lag_12
+data %>%
+  lm(stations_lag_12 ~ car_lag_7 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(stations_lag_1 ~ Interest_GW + Interest_Ecar + post_sep_17, data = .) %>%
+  summ(digits = 3)
+
+```
+
+PORTS TOTAL AS DV
+```{r}
+# IVs - interest in global warming, interest in e-cars
+data %>%
+  lm(PortsTotal ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags)
+data %>%
+  lm(PortsTotal ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12,
+     data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags), sep 2017 break
+data %>%
+  lm(PortsTotal ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12 +
+       post_sep_17,
+     data = .) %>%
+  summ(digits = 3)
+```
+
+PORTS TOTAL AS DV - MOST SIGNIFICANT LAGS
+```{r}
+# gw_lag_6, car_lag_10, car_lag_11, car_lag_12
+data %>%
+  lm(PortsTotal ~ gw_lag_6 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+
+```
+
+PORTS TOTAL AS DV (LAGGED)
+```{r}
+# IVs - interest in global warming, interest in e-cars
+data %>%
+  lm(ports_lag_2 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(ports_lag_3 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(ports_lag_4 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+data %>% # BEST
+  lm(ports_lag_5 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags)
+data %>%
+  lm(ports_lag_2 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(ports_lag_3 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(ports_lag_4 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+data %>% # BEST
+  lm(ports_lag_5 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags), sep 2017 break
+data %>%
+  lm(ports_lag_5 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12 +
+       post_sep_17,
+     data = .) %>%
+  summ(digits = 3)
+```
+
+PORTS TOTAL AS DV (LAGGED) - MOST SIGNIFICANT
+```{r}
+# gw_lag_10, car_lag_7, car_lag_10, car_lag_11
+data %>% # BEST
+  lm(ports_lag_5 ~ gw_lag_10 + car_lag_7 + car_lag_10 + car_lag_11, data = .) %>%
+  summ(digits = 3)
+
+
+data %>%
+  lm(ports_lag_5 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+```
+
+PORTS FAST AS DV
+```{r}
+# IVs - interest in global warming, interest in e-cars
+data %>%
+  lm(PortsFast ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags)
+data %>%
+  lm(PortsFast ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12,
+     data = .) %>%
+  summ(digits = 3)
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags), sep 2017 break
+data %>%
+  lm(PortsFast ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12 +
+       post_jul_18,
+     data = .) %>%
+  summ(digits = 3)
+```
+
+FINAL MODEL CHOSEN FOR REPORT
+```{r}
+data %>%
+  lm(PortsFast ~ car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 +
+       gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 +
+       post_jul_18,
+     data = .) -> model
+  # summ(digits = 3)
+
+
+stargazer(model, type = "html", out = "cars.html")
+
+
+# assumption mean error check
+residuals1 <- resid(model)
+summary(residuals1)
+
+
+# homoskedasticity - variance of residuals is not hetero
+plot(residuals1)
+ncvTest(model)
+
+
+# multicollinear
+vif(model)
+
+
+# autocorrelation
+acf(residuals1)
+durbinWatsonTest(model)
+
+
+# check for error distribution - normal?
+hist(df$PortsFast)
+qqnorm(resid(model))
+
+
+# robustness check - alternative model
+data %>%
+  lm(PortsFast ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 + car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 +car_lag_11 +car_lag_12,
+     data = .) %>% summ(digits = 3)
+## adding lag 6, 7, 12 were not significant, and did not make lags 8, 9, 10 less significant, so model is robust
+
+
+
+```
+
+***PORTS FAST AS DV - MOST SIGNIFICANT LAGS***
+```{r}
+# gw_lag_9, gw_lag_10, car_lag_7, car_lag_8, car_lag_9, car_lag_10, post_jul_18
+data %>%
+  lm(PortsFast ~ gw_lag_9 + gw_lag_10 + car_lag_7 + car_lag_8 + car_lag_9 +
+       car_lag_10 + post_jul_18, data = .) %>%
+  summ(digits = 3)
+
+
+```
+
+PORTS FAST AS DV (LAGGED)
+```{r}
+# IVs - interest in global warming, interest in e-cars
+data %>%
+  lm(ports_fast_lag_2 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+data %>% # BEST
+  lm(ports_fast_lag_3 ~ Interest_GW + Interest_Ecar, data = .) %>%
+  summ(digits = 3)
+
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags)
+data %>%
+  lm(ports_fast_lag_2 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+data %>%
+  lm(ports_fast_lag_3 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12, data = .) %>%
+  summ(digits = 3)
+
+
+
+# IVs - interest in global warming (lags), interest in e-cars (lags), jul 2018 break
+data %>%
+  lm(ports_fast_lag_2 ~ gw_lag_6 + gw_lag_7 + gw_lag_8 + gw_lag_9 + gw_lag_10 + gw_lag_11 + gw_lag_12 +
+       car_lag_6 + car_lag_7 + car_lag_8 + car_lag_9 + car_lag_10 + car_lag_11 + car_lag_12 +
+       post_jul_18,
+     data = .) %>%
+  summ(digits = 3)
+```
+
+PORTS FAST AS DV (LAGGED) - MOST SIGNIFICANT
+```{r}
+# gw_lag_11, gw_lag_12, car_lag_6, car_lag_9, car_lag_10, car_lag_11, post_jul_18
+data %>%
+  lm(ports_fast_lag_2 ~ gw_lag_11 + gw_lag_12 + car_lag_6 + car_lag_9 + car_lag_10 + car_lag_11 + post_jul_18,
+     data = .) %>%
+  summ(digits = 3)
+
+```
+
